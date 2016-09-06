@@ -91,7 +91,9 @@
         "deprecatedPublicIPs": [],
         "ports": [
           {
-            "port": 1
+            "port": 9102,
+            "protocol": "TCP",
+            "targetPort": 8080
           }
         ],
         "selector": {
@@ -278,7 +280,7 @@
                     "command": [
                       "/bin/bash",
                       "-c",
-                      "(curl -f 127.0.0.1:8778) >/dev/null 2>&1; test $? != 7"
+                      "(curl -f 127.0.0.1:8080) >/dev/null 2>&1; test $? != 7"
                     ]
                   },
                   "initialDelaySeconds": 30,
@@ -286,9 +288,12 @@
                 },
                 "ports": [
                   {
+                    "containerPort": 8080,
+                    "name": "http"
+                  },
+                  {
                     "containerPort": 8778,
-                    "name": "jolokia",
-                    "protocol": "TCP"
+                    "name": "jolokia"
                   }
                 ],
                 "resources": {}

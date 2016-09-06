@@ -82,7 +82,7 @@
           "provider": "s2i",
           "project": "${APP_NAME}",
           "version": "${APP_VERSION}",
-          "group": "quickstarts"
+          "group": "fis-demo"
         },
         "name": "${SERVICE_NAME}"
       },
@@ -91,7 +91,9 @@
         "deprecatedPublicIPs": [],
         "ports": [
           {
-            "port": 1
+            "port": 9102,
+            "protocol": "TCP",
+            "targetPort": 8080
           }
         ],
         "selector": {
@@ -99,7 +101,7 @@
           "project": "${APP_NAME}",
           "component": "${APP_NAME}",
           "provider": "s2i",
-          "group": "quickstarts"
+          "group": "fis-demo"
         }
       }
     },
@@ -112,7 +114,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "quickstarts",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -132,7 +134,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "quickstarts",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -217,7 +219,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "quickstarts",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -250,7 +252,7 @@
           "component": "${APP_NAME}",
           "container": "java",
           "deploymentconfig": "${APP_NAME}",
-          "group": "quickstarts",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -262,7 +264,7 @@
               "component": "${APP_NAME}",
               "container": "java",
               "deploymentconfig": "${APP_NAME}",
-              "group": "quickstarts",
+              "group": "fis-demo",
               "project": "${APP_NAME}",
               "provider": "s2i",
               "version": "${APP_VERSION}"
@@ -286,9 +288,12 @@
                 },
                 "ports": [
                   {
+                    "containerPort": 8080,
+                    "name": "http"
+                  },
+                  {
                     "containerPort": 8778,
-                    "name": "jolokia",
-                    "protocol": "TCP"
+                    "name": "jolokia"
                   }
                 ],
                 "resources": {}

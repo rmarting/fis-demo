@@ -24,10 +24,15 @@
     <fabric8.dockerUser>fabric8/</fabric8.dockerUser>
     <docker.image>${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
     <docker.port.container.jolokia>8778</docker.port.container.jolokia>
+    <docker.port.container.http>8080</docker.port.container.http>
+
+	<fabric8.service.name>fis-demo-camel-cxf</fabric8.service.name>
+	<fabric8.service.port>9102</fabric8.service.port>
+	<fabric8.service.containerPort>8080</fabric8.service.containerPort>
 
     <fabric8.label.component>${project.artifactId}</fabric8.label.component>
     <fabric8.label.container>java</fabric8.label.container>
-    <fabric8.label.group>quickstarts</fabric8.label.group>
+    <fabric8.label.group>fis-demo</fabric8.label.group>
     <fabric8.iconRef>camel</fabric8.iconRef>
   </properties>
 
