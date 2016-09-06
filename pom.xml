@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.redhat.fis.demo</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>FIS :: Demo :: Parent</name>
+    <packaging>pom</packaging>
+
+    <properties>
+		<!-- Build Timestamp -->
+		<maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+		<timestamp>${maven.build.timestamp}</timestamp>        
+    </properties>
+
+    <modules>
+        <module>camel-cxf</module>
+        <module>camel-cxfrs</module>
+    </modules>
+
+    <dependencies>
+    </dependencies>
+
+    <build>
+    </build>
+
+</project>
