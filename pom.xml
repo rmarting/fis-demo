@@ -18,6 +18,7 @@
     <modules>
         <module>camel-cxf</module>
         <module>camel-cxfrs</module>
+        <module>camel-eip</module>
     </modules>
 
     <dependencies>
