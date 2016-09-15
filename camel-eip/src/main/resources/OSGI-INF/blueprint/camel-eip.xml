@@ -38,7 +38,7 @@
 	
     <!-- CXF Endpoints -->
     <cxf:cxfEndpoint id="customerWebService" 
-    	address="http://localhost:8080/ws/customer/" 
+    	address="http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
     	serviceClass="com.redhat.fis.ws.CustomerWS" 
     	loggingFeatureEnabled="true">
     </cxf:cxfEndpoint>
@@ -48,7 +48,7 @@
     
     <!-- CXF Clients -->
     <cxf:rsClient id="customerRestServiceClient" 
-    	address="http://localhost:8081/rs" 
+    	address="http://fis-demo-camel-cxfrs-fis.rhel-cdk.192.168.121.186.xip.io/rs" 
     	serviceClass="com.redhat.fis.rs.CustomerRest"
         loggingFeatureEnabled="true">
     		<cxf:headers>    		  
