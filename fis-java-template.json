@@ -8,12 +8,12 @@
       "iconClass": "icon-java"
     },
     "labels": {},
-    "name": "fis-demo-s2i-camel-cxf"
+    "name": "fis-template-s2i-java-camel-spring"
   },
   "parameters": [
     {
       "name": "APP_NAME",
-      "value": "fis-demo-s2i-camel-cxf",
+      "value": "fis-java-camel-spring",
       "description": "Application Name"
     },
     {
@@ -27,8 +27,12 @@
       "description": "Git ref to build"
     },
     {
+      "name": "CONTEXT_DIR",
+      "description": "Set this to the relative path to your project if it is not in the root of your repository"
+    },
+    {
       "name": "SERVICE_NAME",
-      "value": "fis-demo-s2i-camel-cxf",
+      "value": "fis-java-camel-spring",
       "description": "Exposed Service name"
     },
     {
@@ -82,7 +86,7 @@
           "provider": "s2i",
           "project": "${APP_NAME}",
           "version": "${APP_VERSION}",
-          "group": "quickstarts"
+          "group": "fis"
         },
         "name": "${SERVICE_NAME}"
       },
@@ -101,7 +105,7 @@
           "project": "${APP_NAME}",
           "component": "${APP_NAME}",
           "provider": "s2i",
-          "group": "quickstarts"
+          "group": "fis"
         }
       }
     },
@@ -114,7 +118,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis-demo",
+          "group": "fis",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -134,7 +138,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis-demo",
+          "group": "fis",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -167,7 +171,8 @@
           "git": {
             "uri": "${GIT_REPO}",
             "ref": "${GIT_REF}"
-          }
+          },
+          "contextDir": "${CONTEXT_DIR}"
         },
         "strategy": {
           "type": "Source",
@@ -219,7 +224,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis-demo",
+          "group": "fis",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -252,7 +257,7 @@
           "component": "${APP_NAME}",
           "container": "java",
           "deploymentconfig": "${APP_NAME}",
-          "group": "fis-demo",
+          "group": "fis",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -264,7 +269,7 @@
               "component": "${APP_NAME}",
               "container": "java",
               "deploymentconfig": "${APP_NAME}",
-              "group": "fis-demo",
+              "group": "fis",
               "project": "${APP_NAME}",
               "provider": "s2i",
               "version": "${APP_VERSION}"
