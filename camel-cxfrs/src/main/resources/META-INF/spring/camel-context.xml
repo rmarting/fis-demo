@@ -16,7 +16,6 @@
      permissions and limitations under the License.
 
 -->
-<!-- Configures the Camel Context-->
 <beans xmlns="http://www.springframework.org/schema/beans"
     xmlns:camel="http://camel.apache.org/schema/spring"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -28,7 +27,7 @@
 
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider"/>
     
-    <!-- CXF Endpoints -->
+    <!-- CXF-RS Endpoints -->
     <cxf:rsServer id="customerRestService" address="http://0.0.0.0:8080/rs" 
     	serviceClass="com.redhat.fis.demo.rs.CustomerRest"
     	loggingFeatureEnabled="true">
