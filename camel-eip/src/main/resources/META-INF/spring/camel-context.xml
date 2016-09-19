@@ -63,6 +63,9 @@
 
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
+        <camel:endpoint
+            uri="dozer:csv2json?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=transform-json&amp;mappingFile=transformation.xml"
+            id="csv2json" />
 
         <dataFormats>
             <bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
@@ -70,10 +73,6 @@
             <json id="transform-json" library="Jackson" />
             <json id="json2Account" library="Jackson" unmarshalTypeName="org.globex.Account"/>
         </dataFormats>
-        
-        <endpoint
-            uri="dozer:csv2json?sourceModel=org.acme.Customer&amp;targetModel=org.globex.Account&amp;marshalId=transform-json&amp;mappingFile=transformation.xml"
-            id="csv2json" />
 
         <route id="test-route">
             <from uri="timer:foo?period=60000"/>
