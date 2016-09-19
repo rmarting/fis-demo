@@ -25,11 +25,10 @@
     
     <bean id="customerWSImpl" class="com.redhat.fis.ws.CustomerWSImpl"/>
 
-	<camelContext id="camelContext-fis-demo-cxf"
-		xmlns="http://camel.apache.org/schema/spring">
+	<camelContext id="camelContext-fis-demo-cxf" xmlns="http://camel.apache.org/schema/spring">
 		<route id="cbr-route">
 			<!-- generate random number message, using a 3 digit number -->
-			<from id="_from1" uri="timer:foo?period=10000" />
+			<from id="_from1" uri="timer:foo?period=60000" />
 			<transform id="_transform1">
 				<method beanType="org.apache.commons.lang3.RandomStringUtils"
 					method="randomNumeric(3)" />
