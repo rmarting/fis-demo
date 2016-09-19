@@ -27,6 +27,13 @@
         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
+    <!-- ActiveMQ -->        
+    <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="brokerURL" value="tcp://amqbroker-amq-tcp:61616"/>
+        <property name="userName" value="admin"/>
+        <property name="password" value="admin"/>
+    </bean>       
+
     <!-- JAXRS providers -->
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
@@ -54,11 +61,22 @@
     <!-- Aggregator -->
     <bean id="accountAggregator" class="com.redhat.fis.demo.eip.aggregator.AccountAggregator"/>
 
-
+    <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
+        </dataFormats>
+
         <route id="test-route">
             <from uri="timer:foo?period=60000"/>
             <log message="Camel Context running!"/>
+        </route>
+
+        <route id="load-account-amq">
+            <from uri="activemq:queue:account"/>
+            <log message="(AMQ) Account: ${body}"/>
+            <unmarshal ref="bindyDataformat" />
+            <log message="(AMQ) Customer: ${body}" />
         </route>
     
         <route id="load-account">
