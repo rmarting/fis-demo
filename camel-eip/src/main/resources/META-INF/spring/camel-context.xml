@@ -65,6 +65,8 @@
     <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
         <dataFormats>
             <bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
+            
+            <json id="json2Account" library="Jackson" unmarshalTypeName="org.globex.Account"/>
         </dataFormats>
 
         <route id="test-route">
@@ -72,11 +74,22 @@
             <log message="Camel Context running!"/>
         </route>
 
-        <route id="load-account-amq">
-            <from uri="activemq:queue:account"/>
-            <log message="(AMQ) Account: ${body}"/>
+        <route id="load-customer-amq">
+            <from uri="activemq:queue:customer-csv"/>
+            <log message="(AMQ) CSV data: ${body}"/>
             <unmarshal ref="bindyDataformat" />
             <log message="(AMQ) Customer: ${body}" />
+            <to ref="csv2json" />
+            <log message="(AMQ) Account: ${body}" />
+            <to uri="activemq:queue:account-json" />
+        </route>
+
+        <route id="load-account-amq">
+            <from uri="activemq:queue:account-json"/>
+            <log message="(AMQ) Account JSON: ${body}"/>
+            <unmarshal ref="json2Account"/>
+            <log message="(AMQ) Account: ${body}" />
+            <!-- TODO: Manage Account -->
         </route>
     
         <route id="load-account">
