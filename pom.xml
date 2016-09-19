@@ -19,6 +19,7 @@
         <module>camel-cxf</module>
         <module>camel-cxfrs</module>
         <module>camel-eip</module>
+        <module>camel-amq</module>
     </modules>
 
     <dependencies>
