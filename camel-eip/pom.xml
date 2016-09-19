@@ -3,41 +3,31 @@
 
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.redhat.fis.demo</groupId>
-  <artifactId>camel-eip</artifactId>
+  <groupId>com.redhat.fis</groupId>
+  <artifactId>java-camel-spring-archetype</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <packaging>bundle</packaging>
-  
-  <name>FIS :: DEMO :: Karaf :: Camel EIP</name>
-  
-  <description>A simple Camel route in Karaf container</description>
+  <packaging>jar</packaging>
+
+  <name>Fabric8 :: Quickstarts :: Java :: Camel Spring</name>
+  <description>Camel route using Spring XML in a standalone Java container</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <version.maven-bundle-plugin>2.3.7</version.maven-bundle-plugin>
 
-    <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
+    <!-- the version of the BOM, defining all the dependency versions -->
     <fuse.version>6.2.1.redhat-084</fuse.version>
     <fabric8.version>2.2.0.redhat-079</fabric8.version>
     <docker.maven.plugin.version>0.13.6</docker.maven.plugin.version>
-    <karaf.plugin.version>4.0.2.redhat-621079</karaf.plugin.version>
 
-    <docker.from>jboss-fuse-6/fis-karaf-openshift:1.0</docker.from>
+    <!-- Docker & Fabric8 Configs -->
+    <docker.from>jboss-fuse-6/fis-java-openshift:1.0</docker.from>
     <fabric8.dockerUser>fabric8/</fabric8.dockerUser>
-    <docker.image>${fabric8.dockerUser}quickstart-karaf-camellog:${project.version}</docker.image>
-    <docker.assemblyDescriptor>${basedir}/src/main/fabric8/assembly.xml</docker.assemblyDescriptor>
+    <docker.image>${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
     <docker.port.container.jolokia>8778</docker.port.container.jolokia>
-    <docker.port.container.http>8181</docker.port.container.http>
-
-	<fabric8.service.name>fis-demo-camel-eip</fabric8.service.name>
-	<!-- 
-	<fabric8.service.port>9102</fabric8.service.port>
-	<fabric8.service.containerPort>8080</fabric8.service.containerPort>
-	-->
 
     <fabric8.label.component>${project.artifactId}</fabric8.label.component>
-    <fabric8.label.container>karaf</fabric8.label.container>
-    <fabric8.label.group>fis-demo</fabric8.label.group>
+    <fabric8.label.container>java</fabric8.label.container>
+    <fabric8.label.group>quickstarts</fabric8.label.group>
     <fabric8.iconRef>camel</fabric8.iconRef>
   </properties>
 
@@ -62,86 +52,71 @@
   </dependencyManagement>
 
   <dependencies>
-	<!-- Camel Components -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.camel</groupId>
-      <artifactId>camel-blueprint</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-cxf</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.camel</groupId>
-      <artifactId>camel-jackson</artifactId>
+      <artifactId>camel-spring</artifactId>
     </dependency>
     
-    <!-- CXF Implementation -->
     <dependency>
-      <groupId>org.apache.cxf</groupId>
-      <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-cxf</artifactId>
     </dependency>
     
-    <!-- Jackson Implementation -->
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-jaxrs</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>2.4.3</version>
-    </dependency>
-    
-	<!-- Logging -->
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-api</artifactId>
-	</dependency>
+                <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-jackson</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.12</version>
+        </dependency>
 
-    <!-- Karaf microcontainer dependencies -->
     <dependency>
-      <!-- scope is compile so all features (there is only one) are installed into startup.properties,
-      and the feature repo itself is not added in etc/org.apache.karaf.features.cfg file -->
-      <groupId>org.jboss.fuse</groupId>
-      <artifactId>fuse-karaf-framework</artifactId>
-      <version>${fuse.version}</version>
-      <type>kar</type>
-      <!-- no need to download kar dependencies -->
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
     </dependency>
-    
-	<!-- Testing & Camel Plugin -->
-	<dependency>
-		<groupId>org.apache.camel</groupId>
-		<artifactId>camel-test-blueprint</artifactId>
-		<scope>test</scope>
-	</dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+
+    <!-- used for generating random message -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.4</version>
+    </dependency>
+
+    <!-- testing -->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-test-spring</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.arquillian.junit</groupId>
+      <artifactId>arquillian-junit-container</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.fabric8</groupId>
+      <artifactId>fabric8-arquillian</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
-    <finalName>${project.artifactId}</finalName>
-    <resources>
-      <resource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </resource>
-    </resources>
+    <defaultGoal>install</defaultGoal>
 
     <plugins>
       <!-- Compiler plugin enforces Java 1.7 compatibility and activates annotation processors -->
@@ -154,30 +129,17 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>maven-bundle-plugin</artifactId>
-        <version>${version.maven-bundle-plugin}</version>
-        <extensions>true</extensions>
-		<configuration>
-			<instructions>
-				<Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
-				<Bundle-Name>${project.name}</Bundle-Name>
-				<Bundle-Version>${project.version}</Bundle-Version>
-				<Private-Package>com.rehat.fis.demo.eip.*</Private-Package>
-				<Import-Package>*</Import-Package>
-			</instructions>
-		</configuration>        
-      </plugin>
-      
-      <plugin>
-        <groupId>org.apache.camel</groupId>
-        <artifactId>camel-maven-plugin</artifactId>
-        <version>2.15.1</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+        <inherited>true</inherited>
         <configuration>
-		  <useBlueprint>true</useBlueprint>
+          <excludes>
+            <exclude>**/*KT.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>io.fabric8</groupId>
         <artifactId>fabric8-maven-plugin</artifactId>
@@ -199,67 +161,24 @@
           </execution>
         </executions>
       </plugin>
-      <!-- plugin goals have to be executed in order -->
-      <!-- 1. install the bundle -->
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-install-plugin</artifactId>
-        <version>2.5.2</version>
+        <groupId>io.fabric8</groupId>
+        <artifactId>hawt-app-maven-plugin</artifactId>
+        <version>${fabric8.version}</version>
         <executions>
           <execution>
-            <id>install-bundle</id>
+            <id>hawt-app</id>
             <goals>
-              <goal>install</goal>
-            </goals>
+<goal>build</goal>
+</goals>
+            <configuration>
+              <javaMainClass>org.apache.camel.spring.Main</javaMainClass>
+            </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <!-- 2. create karaf assembly -->
-      <!-- karaf-maven-plugin creates custom microservice distribution -->
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karaf.plugin.version}</version>
-        <extensions>true</extensions>
-        <executions>
-          <execution>
-            <id>karaf-assembly</id>
-            <goals>
-              <goal>assembly</goal>
-            </goals>
-            <phase>install</phase>
-          </execution>
-          <execution>
-            <id>karaf-archive</id>
-            <goals>
-              <goal>archive</goal>
-            </goals>
-            <phase>install</phase>
-          </execution>
-        </executions>
-        <configuration>
-          <!-- we are using karaf 2.4.x -->
-          <karafVersion>v24</karafVersion>
-          <useReferenceUrls>true</useReferenceUrls>
-          <!-- do not include build output directory -->
-          <includeBuildOutputDirectory>false</includeBuildOutputDirectory>
-          <!-- no startupFeatures -->
-          <startupFeatures>
-            <feature>karaf-framework</feature>
-            <feature>shell</feature>
-            <feature>jaas</feature>
-            <feature>aries-blueprint</feature>
-            <feature>camel-blueprint</feature>
-            <feature>camel-cxf</feature>
-          </startupFeatures>
-          <startupBundles>
-            <bundle>mvn:${project.groupId}/${project.artifactId}/${project.version}</bundle>
-          </startupBundles>
-        </configuration>
-      </plugin>
-
-      <!-- 3. create docker image -->
       <plugin>
         <groupId>org.jolokia</groupId>
         <artifactId>docker-maven-plugin</artifactId>
@@ -272,24 +191,25 @@
                 <from>${docker.from}</from>
                 <assembly>
                   <basedir>/deployments</basedir>
-                  <user>jboss:jboss:jboss</user>
-                  <inline xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2" xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-                    <id>${project.artifactId}</id>
-                    <files>
-                      <!-- copy karaf archive -->
-                      <file>
-                        <source>${project.build.directory}/${project.artifactId}-${project.version}.tar.gz</source>
-                        <outputDirectory>/</outputDirectory>
-                      </file>
-                    </files>
-                  </inline>
+                  <descriptorRef>hawt-app</descriptorRef>
                 </assembly>
-                <cmd>
-                  <shell>/deployments/deploy-and-run.sh</shell>
-                </cmd>
+                <env>
+                  <JAVA_LIB_DIR>/deployments/lib</JAVA_LIB_DIR>
+                  <JAVA_MAIN_CLASS>org.apache.camel.spring.Main</JAVA_MAIN_CLASS>
+                </env>
               </build>
             </image>
           </images>
+        </configuration>
+      </plugin>
+
+      <!-- allows the route to be ran via 'mvn exec:java' -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <version>1.4.0</version>
+        <configuration>
+          <mainClass>org.apache.camel.spring.Main</mainClass>
         </configuration>
       </plugin>
     </plugins>
@@ -328,7 +248,7 @@
     </pluginManagement>
   </build>
 
-    <!--
+  <!--
   Default sample commands:
 
   mvn -Pf8-build         ... build Docker images and create OpenShift deployment configs
@@ -348,7 +268,7 @@
       <id>f8-deploy</id>
       <properties>
         <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
-        <fabric8.recreate>true</fabric8.recreate>
+       <fabric8.recreate>true</fabric8.recreate>
       </properties>
       <build>
         <defaultGoal>clean install docker:build docker:push fabric8:json fabric8:apply</defaultGoal>

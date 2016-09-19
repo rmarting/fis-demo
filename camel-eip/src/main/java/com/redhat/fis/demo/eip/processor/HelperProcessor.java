@@ -99,8 +99,9 @@ public class HelperProcessor {
 	 */
 	public void manageRESTResponse(Exchange exchange) throws IOException {
 		// Getting Account POJO value from CustomerRS
-        ResponseImpl responseImpl = exchange.getIn().getBody(ResponseImpl.class);
-        Account account = responseImpl.readEntity(Account.class);
+        // ResponseImpl responseImpl = exchange.getIn().getBody(ResponseImpl.class);
+        // Account account = responseImpl.readEntity(Account.class);
+		Account account = exchange.getIn().getBody(Account.class);
 
 		LOGGER.info("Account from CustomerRS: {}", account);
 		
