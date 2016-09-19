@@ -16,14 +16,12 @@
      permissions and limitations under the License.
 
 -->
-<!-- Configures the Camel Context-->
-
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:camel="http://camel.apache.org/schema/spring"
-       xmlns:jaxws="http://cxf.apache.org/jaxws"
-       xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
-       xsi:schemaLocation="
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
+    xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
@@ -32,6 +30,7 @@
     <!-- JAXRS providers -->
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
+    <!-- JAX-RS Client -->
     <jaxrs-client:client id="customerRestServiceClient" 
         address="http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs" 
         serviceClass="com.redhat.fis.rs.CustomerRest">
@@ -44,37 +43,23 @@
             </jaxrs-client:providers>
     </jaxrs-client:client>
     
+    <!-- JAX-WS Client -->
     <jaxws:client id="customerWebService" 
         address="http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
-    
+    <!-- Helper Processor -->
     <bean id="helperProcessor" class="com.redhat.fis.demo.eip.processor.HelperProcessor"/>
-    <!-- Aggregators -->
+    <!-- Aggregator -->
     <bean id="accountAggregator" class="com.redhat.fis.demo.eip.aggregator.AccountAggregator"/>
 
 
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
-
-    <route id="cbr-route">
-      <from uri="timer:foo?period=5000"/>
-      <!-- generate random number message, using a 3 digit number -->
-      <transform>
-        <method beanType="org.apache.commons.lang3.RandomStringUtils" method="randomNumeric(3)"/>
-      </transform>
-      <choice>
-        <when>
-          <simple>${body} &gt; 500</simple>
-          <log message="High priority message : ${body}"/>
-          <to uri="mock:high"/>
-        </when>
-        <otherwise>
-          <log message="Low priority message  : ${body}"/>
-          <to uri="mock:regular"/>
-        </otherwise>
-      </choice>
-    </route>
+    <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
+        <route id="test-route">
+            <from uri="timer:foo?period=60000"/>
+            <log message="Camel Context running!"/>
+        </route>
     
         <route id="load-account">
             <from uri="timer:account?period=30s"/>
@@ -84,7 +69,7 @@
                 <to uri="direct:rs" />
                 <to uri="direct:ws" />
             </multicast>
-            <log message="Result: ${body}"/>
+            <log message="Aggregate Result: ${body}"/>
         </route>
         
         <!-- Routes to Call Services -->    
@@ -99,31 +84,11 @@
                 </handled>
                 <log message="Error in callRS service.\nMessage: ${exception.message}\nStack Trace:\n${exception.stacktrace}" />
             </onException>       
-            
-            <log message="Invoking REST Service (Account):\n${body}" />
-<!--             <bean ref="helperProcessor" method="convertAccountToString" /> -->
-            
-            <!-- Preparing Http Headers -->
-<!--             <setHeader headerName="CamelCxfRsUsingHttpAPI"> -->
-<!--                 <constant>true</constant>         -->
-<!--             </setHeader> -->
-<!--             <setHeader headerName="CamelHttpMethod"> -->
-<!--                 <constant>POST</constant>         -->
-<!--             </setHeader> -->
-<!--             <setHeader headerName="Content-Type"> -->
-<!--                 <constant>application/json</constant> -->
-<!--             </setHeader> -->
-<!--             <setHeader headerName="CamelHttpPath"> -->
-<!--                 <constant>/customerservice/enrich</constant>         -->
-<!--             </setHeader> -->
-<!--             <setHeader headerName="originalBody"> -->
-<!--                 <constant>${body}</constant>         -->
-<!--             </setHeader> -->
-            
+
             <!-- Calling RS Service -->
-            <log message="Invoking RS Service"/>
+            <log message="Invoking REST Service:\n${body}" />
             <bean ref="customerRestServiceClient" method="enrich"/>
-<!--             <inOut uri="cxfrs:bean:customerRestServiceClient"/> -->
+            <log message="Response from REST Service:\n${body}" />
             
             <!-- Procesing Response -->
             <bean ref="helperProcessor" method="manageRESTResponse" />
@@ -141,22 +106,12 @@
                 </handled>
                 <log message="Error in callWS service.\nMessage: ${exception.message}\nStack Trace:\n${exception.stacktrace}" />
             </onException>          
-            
-            <bean ref="customerWebService" method="updateAccount"/>
-<!--             <inOut uri="cxf:bean:customerWebService" /> -->
-            
-            <!-- Procesing Response -->
-            <!-- 
-            <bean ref="helperProcessor" method="manageSOAPResponse"/>
-            -->
-<!--             <transform> -->
-<!--                 <simple>${in.body[0]}</simple> -->
-<!--             </transform> -->
-            <log message="Response from customerWebService:\n${body}"/>    
-        </route>
-        
-    
 
-  </camelContext>
+            <!-- Calling WS Service -->
+            <log message="Invoking SOAP-WS Service:\n${body}" />
+            <bean ref="customerWebService" method="updateAccount"/>
+            <log message="Response from SOAP-WS:\n${body}"/>    
+        </route>
+    </camelContext>
 
 </beans>
