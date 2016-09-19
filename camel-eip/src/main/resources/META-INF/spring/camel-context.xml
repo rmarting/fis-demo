@@ -38,8 +38,9 @@
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
     <!-- JAX-RS Client -->
+    <!-- http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs -->
     <jaxrs-client:client id="customerRestServiceClient" 
-        address="http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs" 
+        address="http://fis-java-camel-cxfrs/rs" 
         serviceClass="com.redhat.fis.rs.CustomerRest">
             <jaxrs-client:headers>             
                 <entry key="Accept" value="application/json" />
@@ -51,8 +52,9 @@
     </jaxrs-client:client>
     
     <!-- JAX-WS Client -->
+    <!-- http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/ -->
     <jaxws:client id="customerWebService" 
-        address="http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
+        address="http://fis-java-camel-cxf/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
