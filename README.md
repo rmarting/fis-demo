@@ -384,13 +384,6 @@ If we access to the Java Console of the camel-eip pod we could review the Camel 
 
 ![camel-eip - Camel Statistics](./img/fis-demo-camel-eip-camel-route-diagrams.png "camel-eip - Camel Statistics")
 
-
-
-TODO: Todo scale the applications the webservices and identify that it is running everything
-Create a DLQ for the messages not available to test
-create a recovery route to manage the messages not availables (not active initializy)
-camel-eip
-
 <!-- References and Links -->
 
 [1]: https://access.redhat.com/documentation/en/red-hat-xpaas/version-0/red-hat-xpaas-fuse-integration-services-image/
