@@ -16,10 +16,10 @@
      permissions and limitations under the License.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
+<beans xmlns="http://www.springframework.org/schema/beans" 
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:camel="http://camel.apache.org/schema/spring"
-    xmlns:jaxws="http://cxf.apache.org/jaxws"
+    xmlns:camel="http://camel.apache.org/schema/spring" 
+    xmlns:jaxws="http://cxf.apache.org/jaxws" 
     xmlns:jaxrs-client="http://cxf.apache.org/jaxrs-client"
     xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
@@ -27,41 +27,39 @@
         http://cxf.apache.org/jaxrs-client http://cxf.apache.org/schemas/jaxrs-client.xsd
         http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
 
-    <!-- ActiveMQ -->        
+    <!-- ActiveMQ -->
     <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="brokerURL" value="tcp://amqbroker-amq-tcp:61616"/>
-        <property name="userName" value="admin"/>
-        <property name="password" value="admin"/>
+        <property name="brokerURL" value="tcp://amqbroker-amq-tcp:61616" />
+        <property name="userName" value="admin" />
+        <property name="password" value="admin" />
     </bean>       
 
-    <!-- JAXRS providers -->
+    <!-- json Providers -->
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
     <!-- JAX-RS Client -->
     <!-- http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs -->
-    <jaxrs-client:client id="customerRestServiceClient" 
-        address="http://fis-java-camel-cxfrs/rs" 
+    <jaxrs-client:client id="customerRestServiceClient" address="http://fis-java-camel-cxfrs/rs"
         serviceClass="com.redhat.fis.rs.CustomerRest">
-            <jaxrs-client:headers>             
-                <entry key="Accept" value="application/json" />
-                <entry key="Content-Type" value="application/json" />
-            </jaxrs-client:headers>
-            <jaxrs-client:providers>
-                <ref bean="jsonProvider"/>
-            </jaxrs-client:providers>
+        <jaxrs-client:headers>
+            <entry key="Accept" value="application/json" />
+            <entry key="Content-Type" value="application/json" />
+        </jaxrs-client:headers>
+        <jaxrs-client:providers>
+            <ref bean="jsonProvider" />
+        </jaxrs-client:providers>
     </jaxrs-client:client>
     
     <!-- JAX-WS Client -->
     <!-- http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/ -->
-    <jaxws:client id="customerWebService" 
-        address="http://fis-java-camel-cxf/ws/customer/" 
+    <jaxws:client id="customerWebService" address="http://fis-java-camel-cxf/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
     <!-- Helper Processor -->
-    <bean id="helperProcessor" class="com.redhat.fis.demo.eip.processor.HelperProcessor"/>
-    <!-- Aggregator -->
-    <bean id="accountAggregator" class="com.redhat.fis.demo.eip.aggregator.AccountAggregator"/>
+    <bean id="helperProcessor" class="com.redhat.fis.demo.eip.processor.HelperProcessor" />
+    <!-- Aggregator  -->
+    <bean id="accountAggregator" class="com.redhat.fis.demo.eip.aggregator.AccountAggregator" />
 
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
@@ -71,19 +69,19 @@
 
         <dataFormats>
             <bindy type="Csv" classType="org.acme.Customer" id="bindyDataformat" />
-            
+
             <json id="transform-json" library="Jackson" />
-            <json id="json2Account" library="Jackson" unmarshalTypeName="org.globex.Account"/>
+            <json id="json2Account" library="Jackson" unmarshalTypeName="org.globex.Account" />
         </dataFormats>
 
         <route id="test-route">
-            <from uri="timer:foo?period=60000"/>
-            <log message="Camel Context running!"/>
+            <from uri="timer:foo?period=60000" />
+            <log message="Camel Context running!" />
         </route>
 
         <route id="load-customer-amq">
-            <from uri="activemq:queue:customer-csv"/>
-            <log message="(AMQ) CSV data: ${body}"/>
+            <from uri="activemq:queue:customer-csv" />
+            <log message="(AMQ) CSV data: ${body}" />
             <unmarshal ref="bindyDataformat" />
             <log message="(AMQ) Customer: ${body}" />
             <to ref="csv2json" />
@@ -92,31 +90,31 @@
         </route>
 
         <route id="load-account-amq">
-            <from uri="activemq:queue:account-json"/>
-            <log message="(AMQ) Account JSON: ${body}"/>
-            <unmarshal ref="json2Account"/>
+            <from uri="activemq:queue:account-json" />
+            <log message="(AMQ) Account JSON: ${body}" />
+            <unmarshal ref="json2Account" />
             <log message="(AMQ) Account: ${body}" />
             <!-- TODO: Manage Account -->
         </route>
-    
+
         <route id="load-account">
-            <from uri="timer:account?period=30s"/>
-            <bean ref="helperProcessor" method="createAccount"/>
-            <log message="New Account: ${body}"/>
+            <from uri="timer:account?period=120s" />
+            <bean ref="helperProcessor" method="createAccount" />
+            <log message="New Account: ${body}" />
             <multicast strategyRef="accountAggregator" parallelProcessing="false">
                 <to uri="direct:rs" />
                 <to uri="direct:ws" />
             </multicast>
-            <log message="Aggregate Result: ${body}"/>
+            <log message="Aggregate Result: ${body}" />
         </route>
         
-        <!-- Routes to Call Services -->    
+        <!-- Routes to Call Services -->
         <route id="callRS">
-            <from uri="direct:rs"/>
-            
+            <from uri="direct:rs" />
+
             <onException>
                 <exception>java.lang.Exception</exception>
-                <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0"/>
+                <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0" />
                 <handled>
                     <constant>true</constant>
                 </handled>
@@ -125,20 +123,20 @@
 
             <!-- Calling RS Service -->
             <log message="Invoking REST Service:\n${body}" />
-            <bean ref="customerRestServiceClient" method="enrich"/>
+            <bean ref="customerRestServiceClient" method="enrich" />
             <log message="Response from REST Service:\n${body}" />
             
             <!-- Procesing Response -->
             <bean ref="helperProcessor" method="manageRESTResponse" />
-            <log message="Response from customerRestServiceClient:\n${body}"/>
+            <log message="Response from customerRestServiceClient:\n${body}" />
         </route>
-        
+
         <route id="callWS">
-            <from uri="direct:ws"/>
-            
+            <from uri="direct:ws" />
+
             <onException>
                 <exception>java.lang.Exception</exception>
-                <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0"/>
+                <redeliveryPolicy maximumRedeliveries="1" redeliveryDelay="0" />
                 <handled>
                     <constant>true</constant>
                 </handled>
@@ -147,8 +145,8 @@
 
             <!-- Calling WS Service -->
             <log message="Invoking SOAP-WS Service:\n${body}" />
-            <bean ref="customerWebService" method="updateAccount"/>
-            <log message="Response from SOAP-WS:\n${body}"/>    
+            <bean ref="customerWebService" method="updateAccount" />
+            <log message="Response from SOAP-WS:\n${body}" />
         </route>
     </camelContext>
 
