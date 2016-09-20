@@ -8,12 +8,12 @@
       "iconClass": "icon-java"
     },
     "labels": {},
-    "name": "fis-template-s2i-java-camel-spring"
+    "name": "fis-demo-template-camel"
   },
   "parameters": [
     {
       "name": "APP_NAME",
-      "value": "fis-java-camel-spring",
+      "value": "fis-demo-camel",
       "description": "Application Name"
     },
     {
@@ -32,7 +32,7 @@
     },
     {
       "name": "SERVICE_NAME",
-      "value": "fis-java-camel-spring",
+      "value": "fis-demo-camel",
       "description": "Exposed Service name"
     },
     {
@@ -86,26 +86,19 @@
           "provider": "s2i",
           "project": "${APP_NAME}",
           "version": "${APP_VERSION}",
-          "group": "fis"
+          "group": "fis-demo"
         },
         "name": "${SERVICE_NAME}"
       },
       "spec": {
         "clusterIP": "None",
         "deprecatedPublicIPs": [],
-        "ports": [
-          {
-            "port": 9102,
-            "protocol": "TCP",
-            "targetPort": 8080
-          }
-        ],
         "selector": {
           "container": "java",
           "project": "${APP_NAME}",
           "component": "${APP_NAME}",
           "provider": "s2i",
-          "group": "fis"
+          "group": "fis-demo"
         }
       }
     },
@@ -118,7 +111,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -138,7 +131,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -224,7 +217,7 @@
         "labels": {
           "component": "${APP_NAME}",
           "container": "java",
-          "group": "fis",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -257,7 +250,7 @@
           "component": "${APP_NAME}",
           "container": "java",
           "deploymentconfig": "${APP_NAME}",
-          "group": "fis",
+          "group": "fis-demo",
           "project": "${APP_NAME}",
           "provider": "s2i",
           "version": "${APP_VERSION}"
@@ -269,7 +262,7 @@
               "component": "${APP_NAME}",
               "container": "java",
               "deploymentconfig": "${APP_NAME}",
-              "group": "fis",
+              "group": "fis-demo",
               "project": "${APP_NAME}",
               "provider": "s2i",
               "version": "${APP_VERSION}"
@@ -285,17 +278,13 @@
                     "command": [
                       "/bin/bash",
                       "-c",
-                      "(curl -f 127.0.0.1:8080) >/dev/null 2>&1; test $? != 7"
+                      "(curl -f 127.0.0.1:8778) >/dev/null 2>&1; test $? != 7"
                     ]
                   },
                   "initialDelaySeconds": 30,
                   "timeoutSeconds": 5
                 },
                 "ports": [
-                  {
-                    "containerPort": 8080,
-                    "name": "http"
-                  },
                   {
                     "containerPort": 8778,
                     "name": "jolokia"
