@@ -38,8 +38,10 @@
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
 
     <!-- JAX-RS Client -->
-    <!-- http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs -->
-    <jaxrs-client:client id="customerRestServiceClient" address="http://${service:fis-demo-camel-cxfrs:localhost:8080}/rs"
+    <!-- fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io -->
+    <!-- ${service:fis-demo-camel-cxfrs:localhost:8080} -->
+    <jaxrs-client:client id="customerRestServiceClient" 
+        address="http://fis-demo-camel-cxfrs-fis.rhel-cdk.10.1.2.2.xip.io/rs"
         serviceClass="com.redhat.fis.rs.CustomerRest">
         <jaxrs-client:headers>
             <entry key="Accept" value="application/json" />
@@ -51,8 +53,10 @@
     </jaxrs-client:client>
     
     <!-- JAX-WS Client -->
-    <!-- http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/ -->
-    <jaxws:client id="customerWebService" address="http://${service:fis-demo-camel-cxf:localhost:8080}/ws/customer/" 
+    <!-- fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io -->
+    <!-- ${service:fis-demo-camel-cxf:localhost:8080} -->
+    <jaxws:client id="customerWebService" 
+        address="http://fis-demo-camel-cxf-fis.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
