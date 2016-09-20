@@ -109,7 +109,7 @@
                 <to uri="direct:ws" />
             </multicast>
             <log message="Aggregate Result: ${body}" />
-            <marshall ref="transform-json"/>
+            <marshal ref="transform-json"/>
             <to uri="activemq:queue:account-final" />
         </route>
         
