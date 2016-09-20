@@ -63,13 +63,11 @@ Alternatively the template file can be used to create an OpenShift application t
 
 You can find more details about running this [quickstart](http://fabric8.io/guide/quickstarts/running.html) on the website. This also includes instructions how to change the Docker image user and registry.
 
+### Testing
 
-curl \
-	-H "Accept: application/json" \
-	-H "Content-Type: application/json" \
-	-X POST \
-	-d '{"company":{"name":"MicroservicesVision","geo":"EA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
-	http://fis-demo-camel-cxfrs-fis.rhel-cdk.192.168.121.186.xip.io/rs/customerservice/enrich
+If there is not issues, we could test the REST endpoint with the following _curl_ command:
 
-{"company":{"name":"MicroservicesVision","geo":"WEST_AMERICA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}
-
+    [rmarting@rhel7 ~] curl -H "Accept: application/json" -H "Content-Type: application/json" -X POST \
+    > -d '{"company":{"name":"MicroservicesVision","geo":"WA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}' \
+    > http://fis-demo-camel-cxfrs-fis.rhel-cdk.10.1.2.2.xip.io/rs/customerservice/enrich
+    {"company":{"name":"MicroservicesVision","geo":"WEST_AMERICA","active":true},"contact":{"firstName":"Fred","lastName":"Quicksand","streetAddr":"202 Barney Blvd.","city":"Rock City","state":"MI","zip":"19728","phone":"100-400-2000"},"clientId":0,"salesRepresentative":null}

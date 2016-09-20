@@ -63,3 +63,6 @@ Alternatively the template file can be used to create an OpenShift application t
 
 You can find more details about running this [quickstart](http://fabric8.io/guide/quickstarts/running.html) on the website. This also includes instructions how to change the Docker image user and registry.
 
+### Testing
+
+There is a SoapUI project create in _src/test/resources/soapui_ with a sample request to test the Web Service deployed.
