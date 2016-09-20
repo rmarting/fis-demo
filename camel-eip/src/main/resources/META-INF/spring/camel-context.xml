@@ -79,7 +79,7 @@
         </dataFormats>
 
         <route id="test-route">
-            <from uri="timer:foo?period=60000" />
+            <from uri="timer:foo?period=120s" />
             <log message="Camel Context running!" />
         </route>
 
@@ -97,19 +97,20 @@
             <from uri="activemq:queue:account-json" />
             <log message="(AMQ) Account JSON: ${body}" />
             <unmarshal ref="json2Account" />
-            <log message="(AMQ) Account: ${body}" />
-            <!-- TODO: Manage Account -->
+            <log message="(AMQ) Account POJO: ${body}" />
+            <to uri="direct:process-account"/>
         </route>
 
-        <route id="load-account">
-            <from uri="timer:account?period=120s" />
-            <bean ref="helperProcessor" method="createAccount" />
-            <log message="New Account: ${body}" />
+        <route id="processAccount">
+            <from uri="direct:process-account" />
+            <log message="Processing Account: ${body}" />
             <multicast strategyRef="accountAggregator" parallelProcessing="false">
                 <to uri="direct:rs" />
                 <to uri="direct:ws" />
             </multicast>
             <log message="Aggregate Result: ${body}" />
+            <marshall ref="transform-json"/>
+            <to uri="activemq:queue:account-final" />
         </route>
         
         <!-- Routes to Call Services -->
@@ -130,7 +131,7 @@
             <bean ref="customerRestServiceClient" method="enrich" />
             <log message="Response from REST Service:\n${body}" />
             
-            <!-- Procesing Response -->
+            <!-- Processing Response -->
             <bean ref="helperProcessor" method="manageRESTResponse" />
             <log message="Response from customerRestServiceClient:\n${body}" />
         </route>

@@ -1,20 +1,11 @@
 package com.redhat.fis.demo.eip.processor;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.camel.Body;
 import org.apache.camel.Exchange;
-import org.apache.cxf.jaxrs.impl.ResponseImpl;
-//import org.apache.cxf.jaxrs.impl.ResponseImpl;
-//import org.apache.cxf.message.MessageContentsList;
 import org.globex.Account;
 import org.globex.Company;
 import org.globex.Contact;
-import org.globex.CorporateAccount;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,23 +63,6 @@ public class HelperProcessor {
 		// Updating Exchange
 		exchange.getIn().setBody(json);
 	}
-	
-	/**
-	 * Extracts from SOAP Response the CorporateAccount and updates the Exchange with it
-	 * 
-	 * @param exchange Message with the SOAP Response from CustomerWS
-	 * 
-	 * @throws IOException
-	 */
-	public void manageSOAPResponse(Exchange exchange) throws IOException {
-		// Corporate Account from WS
-		// CorporateAccount ca = (CorporateAccount) exchange.getIn().getBody(MessageContentsList.class).get(0);
-		CorporateAccount ca = null;
-
-		LOGGER.info("CorporateAccount from CustomerWS: {}", ca);
-		
-		exchange.getIn().setBody(ca);
-	}
 
 	/**
 	 * Extracts from SOAP Response the CorporateAccount and updates the Exchange with it
@@ -99,8 +73,6 @@ public class HelperProcessor {
 	 */
 	public void manageRESTResponse(Exchange exchange) throws IOException {
 		// Getting Account POJO value from CustomerRS
-        // ResponseImpl responseImpl = exchange.getIn().getBody(ResponseImpl.class);
-        // Account account = responseImpl.readEntity(Account.class);
 		Account account = exchange.getIn().getBody(Account.class);
 
 		LOGGER.info("Account from CustomerRS: {}", account);
