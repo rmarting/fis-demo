@@ -17,10 +17,10 @@
     </properties>
 
     <modules>
+        <module>camel-amq</module>
         <module>camel-cxf</module>
         <module>camel-cxfrs</module>
         <module>camel-eip</module>
-        <module>camel-amq</module>
     </modules>
 
     <dependencies>
