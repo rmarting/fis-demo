@@ -35,11 +35,11 @@
         <route id="amq-version">
             <from uri="timer:version?period=300s" />
             <log message="VERSION: 0.0.1-SNAPSHOT" />
-            <log message="Service Host: {{FIS-DEMO-CAMEL-AMQ_SERVICE_HOST:localhost}}" />
-            <log message="Service Port: {{FIS-DEMO-CAMEL-AMQ_SERVICE_PORT:port}}" />
+            <log message="Service Host: {{FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:localhost}}" />
+            <log message="Service Port: {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
         </route>
 
-        <route id="amq-send-message">
+        <route id="amq-send-message" autoStartup="false">
             <from uri="timer:send-msg?period=120s" />
             <!-- generate random number message, using a 3 digit number -->
             <transform>
