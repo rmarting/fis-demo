@@ -32,8 +32,13 @@
 
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
+        <route id="amq-version">
+            <from uri="timer:version?period=300s" />
+            <log message="VERSION: 0.0.1-SNAPSHOT" />
+        </route>
+
         <route id="amq-send-message">
-            <from uri="timer:send-msg?period=60s" />
+            <from uri="timer:send-msg?period=120s" />
             <!-- generate random number message, using a 3 digit number -->
             <transform>
                 <method beanType="org.apache.commons.lang3.RandomStringUtils"
