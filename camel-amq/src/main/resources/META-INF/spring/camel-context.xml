@@ -32,10 +32,13 @@
 
     <!-- MongoDB -->
     <bean id="mongodb" class="com.mongodb.Mongo">
-        <constructor-arg name="host" value="mongodb-26-rhel7" />
-        <constructor-arg name="port" value="27017" />
+        <constructor-arg index="0">
+            <bean class="com.mongodb.MongoURI">
+                <constructor-arg name="uri" value="mongodb://admin:admin@mongodb-26-rhel7:27017/fis-demo" /> 
+            </bean> 
+        </constructor-arg> 
     </bean>
-    
+        
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
         <route id="amq-version">
