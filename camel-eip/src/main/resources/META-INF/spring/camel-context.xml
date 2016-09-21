@@ -32,7 +32,17 @@
         <property name="brokerURL" value="tcp://amqbroker-amq-tcp:61616" />
         <property name="userName" value="admin" />
         <property name="password" value="admin" />
-    </bean>       
+    </bean>
+    
+    <!-- MongoDB -->
+    <bean id="mongodb" class="com.mongodb.Mongo">
+        <constructor-arg index="0">
+            <bean class="com.mongodb.MongoURI">
+                <constructor-arg name="uri" value="mongodb://admin:admin@mongodb-26-rhel7:27017/fis-demo" /> 
+            </bean> 
+        </constructor-arg> 
+    </bean>
+           
 
     <!-- json Providers -->
     <bean id="jsonProvider" class="org.codehaus.jackson.jaxrs.JacksonJsonProvider" />
@@ -41,7 +51,7 @@
     <!-- fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io -->
     <!-- ${service:fis-demo-camel-cxfrs:localhost:8080} -->
     <jaxrs-client:client id="customerRestServiceClient" 
-        address="http://fis-demo-camel-cxfrs-fis.rhel-cdk.10.1.2.2.xip.io/rs"
+        address="http://fis-java-camel-cxfrs.rhel-cdk.10.1.2.2.xip.io/rs"
         serviceClass="com.redhat.fis.rs.CustomerRest">
         <jaxrs-client:headers>
             <entry key="Accept" value="application/json" />
@@ -56,7 +66,7 @@
     <!-- fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io -->
     <!-- ${service:fis-demo-camel-cxf:localhost:8080} -->
     <jaxws:client id="customerWebService" 
-        address="http://fis-demo-camel-cxf-fis.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
+        address="http://fis-java-camel-cxf.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
@@ -111,6 +121,7 @@
             <log message="Aggregate Result: ${body}" />
             <marshal ref="transform-json"/>
             <to uri="activemq:queue:account-final" />
+            <to uri="direct:save-account"/>
         </route>
         
         <!-- Routes to Call Services -->
@@ -153,6 +164,19 @@
             <bean ref="customerWebService" method="updateAccount" />
             <log message="Response from SOAP-WS:\n${body}" />
         </route>
+        
+        <route id="mongodb-find-accounts" autoStartup="true">
+            <from uri="timer:mongodbfind?period=300s" />
+            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=account&amp;operation=findAll" />
+            <log message="findAll - collection: accounts:\n${body}\n" />
+        </route>
+
+        <route id="mongodb-insert" autoStartup="true">
+            <from uri="direct:save-account" />
+            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=account&amp;operation=insert" />
+            <log message="Account saved in database"/>
+        </route>
+        
     </camelContext>
 
 </beans>
