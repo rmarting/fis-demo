@@ -37,6 +37,8 @@
             <log message="VERSION: 0.0.1-SNAPSHOT" />
             <log message="Service Host: {{FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:localhost}}" />
             <log message="Service Port: {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
+            <log message="Environment: {{FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:local}}" />
+            <log message="Other: {{OTHERENV:other}}" />
         </route>
 
         <route id="amq-send-message" autoStartup="false">
