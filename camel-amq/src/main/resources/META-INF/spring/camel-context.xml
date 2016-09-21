@@ -30,6 +30,12 @@
         <property name="password" value="admin" />
     </bean>
 
+    <!-- MongoDB -->
+    <bean id="mongodb" class="com.mongodb.Mongo">
+        <constructor-arg name="host" value="mongodb-26-rhel7" />
+        <constructor-arg name="port" value="27017" />
+    </bean>
+    
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
         <route id="amq-version">
@@ -39,6 +45,12 @@
             <log message="Service Port: {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
             <log message="Environment: {{FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:local}}" />
             <log message="Other: {{OTHERENV:other}}" />
+        </route>
+
+        <route id="mongodb-stats" autoStartup="true">
+            <from uri="timer:mongodb?period=120s" />
+            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=getDbStats" />
+            <log message="Mongo DbStats: ${body}" />
         </route>
 
         <route id="amq-send-message" autoStartup="false">
