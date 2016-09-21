@@ -50,10 +50,24 @@
             <log message="Other: {{OTHERENV:other}}" />
         </route>
 
-        <route id="mongodb-stats" autoStartup="true">
-            <from uri="timer:mongodb?period=120s" />
+        <route id="mongodb-find" autoStartup="true">
+            <from uri="timer:mongodbfind?period=120s" />
             <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=findAll" />
             <log message="findAll - collection: users:\n${body}\n" />
+        </route>
+
+        <route id="mongodb-insert" autoStartup="true">
+            <from uri="timer:mongodbinsert?period=120s" />
+            <setBody>
+                <simple>
+                    {
+                        "login" : "rmarting",
+                        "name" : "Roman"
+                    }
+                </simple>
+            </setBody>
+            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=insert" />
+            <log message="insert - collection: users:\n${body}\n" />
         </route>
 
         <route id="amq-send-message" autoStartup="false">
