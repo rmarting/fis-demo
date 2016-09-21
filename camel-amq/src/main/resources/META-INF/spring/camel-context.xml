@@ -30,48 +30,20 @@
         <property name="password" value="admin" />
     </bean>
 
-    <!-- MongoDB -->
-    <bean id="mongodb" class="com.mongodb.Mongo">
-        <constructor-arg index="0">
-            <bean class="com.mongodb.MongoURI">
-                <constructor-arg name="uri" value="mongodb://admin:admin@mongodb-26-rhel7:27017/fis-demo" /> 
-            </bean> 
-        </constructor-arg> 
-    </bean>
         
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
         <route id="amq-version">
             <from uri="timer:version?period=300s" />
             <log message="VERSION: 0.0.1-SNAPSHOT" />
-            <log message="Service Host: {{FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:localhost}}" />
-            <log message="Service Port: {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
-            <log message="Environment: {{FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:local}}" />
-            <log message="Other: {{OTHERENV:other}}" />
+            <log message="SERVICE HOST : {{FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:localhost}}" />
+            <log message="SERVICE PORT : {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
+            <log message="ENVIRONMENT  : {{FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:local}}" />
+            <log message="OTHER ENV    : {{OTHERENV:other}}" />
         </route>
 
-        <route id="mongodb-find" autoStartup="true">
-            <from uri="timer:mongodbfind?period=120s" />
-            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=findAll" />
-            <log message="findAll - collection: users:\n${body}\n" />
-        </route>
-
-        <route id="mongodb-insert" autoStartup="true">
-            <from uri="timer:mongodbinsert?period=120s" />
-            <setBody>
-                <simple>
-                    {
-                        "login" : "rmarting",
-                        "name" : "Roman"
-                    }
-                </simple>
-            </setBody>
-            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=insert" />
-            <log message="insert - collection: users:\n${body}\n" />
-        </route>
-
-        <route id="amq-send-message" autoStartup="false">
-            <from uri="timer:send-msg?period=120s" />
+        <route id="amq-send-message" autoStartup="true">
+            <from uri="timer:send-msg?period=240s" />
             <!-- generate random number message, using a 3 digit number -->
             <transform>
                 <method beanType="org.apache.commons.lang3.RandomStringUtils"
