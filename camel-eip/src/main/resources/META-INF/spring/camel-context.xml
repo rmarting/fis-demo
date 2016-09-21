@@ -120,8 +120,10 @@
             </multicast>
             <log message="Aggregate Result: ${body}" />
             <marshal ref="transform-json"/>
-            <to uri="activemq:queue:account-final" />
-            <to uri="direct:save-account"/>
+            <multicast parallelProcessing="true">
+                <to uri="activemq:queue:account-final" />
+                <to uri="direct:save-account" />
+            </multicast>
         </route>
         
         <!-- Routes to Call Services -->
@@ -173,6 +175,7 @@
 
         <route id="mongodb-insert" autoStartup="true">
             <from uri="direct:save-account" />
+            <convertBodyTo type="String"/>
             <to uri="mongodb:mongodb?database=fis-demo&amp;collection=account&amp;operation=insert" />
             <log message="Account saved in database"/>
         </route>
