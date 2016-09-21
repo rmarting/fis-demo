@@ -49,8 +49,8 @@
 
         <route id="mongodb-stats" autoStartup="true">
             <from uri="timer:mongodb?period=120s" />
-            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=getDbStats" />
-            <log message="Mongo DbStats: ${body}" />
+            <to uri="mongodb:mongodb?database=fis-demo&amp;collection=users&amp;operation=findAll" />
+            <log message="findAll - collection: users:\n${body}\n" />
         </route>
 
         <route id="amq-send-message" autoStartup="false">
