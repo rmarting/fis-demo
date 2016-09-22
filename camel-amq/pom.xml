@@ -196,6 +196,10 @@
                                 <env>
                                     <JAVA_LIB_DIR>/deployments/lib</JAVA_LIB_DIR>
                                     <JAVA_MAIN_CLASS>org.apache.camel.spring.Main</JAVA_MAIN_CLASS>
+                                    <FIS_DEMO_CAMEL_AMQ_SERVICE_HOST>pom-service-host</FIS_DEMO_CAMEL_AMQ_SERVICE_HOST>
+                                    <FIS_DEMO_CAMEL_AMQ_SERVICE_PORT>pom-service-port</FIS_DEMO_CAMEL_AMQ_SERVICE_PORT>
+                                    <FIS_DEMO_CAMEL_AMQ_ENVIRONMENT>pom-env</FIS_DEMO_CAMEL_AMQ_ENVIRONMENT>
+                                    <OTHERENV>pom-other</OTHERENV>
                                 </env>
                             </build>
                         </image>
