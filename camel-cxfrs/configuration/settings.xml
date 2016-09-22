@@ -20,13 +20,13 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
 
-  <mirrors>
-    <mirror>
-      <id>nexus-internal-repository</id>
-      <url>http://nexus-cicd.rhel-cdk.10.1.2.2.xip.io/content/groups/public/</url>
-      <mirrorOf>*</mirrorOf>
-    </mirror>
-  </mirrors>
+<!--   <mirrors> -->
+<!--     <mirror> -->
+<!--       <id>nexus-internal-repository</id> -->
+<!--       <url>http://nexus-cicd.rhel-cdk.10.1.2.2.xip.io/content/groups/public/</url> -->
+<!--       <mirrorOf>*</mirrorOf> -->
+<!--     </mirror> -->
+<!--   </mirrors> -->
 
   <profiles>
     <profile>
