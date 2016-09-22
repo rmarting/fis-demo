@@ -6,15 +6,15 @@ This demo was developed using a local [CDK][2], however, it could be done in a f
 
 This demo has the following components deployed:
 
-* Camel AMQ Routes: Some samples to manage different queues availables in a A-MQ service running in the platform.
+* Camel AMQ Routes: Some samples to manage different queues from an A-MQ broker running in the platform.
 * Camel SOAP Web Services: Exposed a SOAP Web Services using Apache Camel CXF component
 * Camel REST Web Services: Exposed a REST Web Services using Apache Camel CXF-RS component
-* Camel EIP Routes: Some samples using some EIP to integrate data from different resources (queues, web services, files, ...)
+* Camel EIP Routes: Some samples using some EIP to integrate data from different resources (queues, web services, files, databases, ...)
 
 Also this project includes some topics about Continuous Integration and Continuous Delivery pipeline using the 
 OpenShift capabilities about them.
 
-The project will be covered using two different namespaces working in a OpenShift plataform:
+The project will be covered using two different namespaces working in a OpenShift platform:
 
 * cicd: Namespace to manage the different CI/CD tools used.
 * fis: Namespace to deploy the integration services developed in this demo.   
@@ -72,7 +72,7 @@ repositories in each build process.
 
 Following this [article][5] we will have a local Nexus Maven Repository working in our OpenShift platform.  
 
-    [rmarting@rhel7 ~] oc new-app sonatype/nexus
+    [rmarting@rhel7 ~] oc new-app sonatype/nexus:2.13.0-01
     --> Found Docker image 7decede (5 months old) from Docker Hub for "sonatype/nexus"
     
       * An image stream will be created as "nexus:latest" that will track this image
@@ -89,7 +89,9 @@ Following this [article][5] we will have a local Nexus Maven Repository working 
     --> Success
     Run 'oc status' to view your app.
 
-*NOTE:* The first time will take some minutes to download and deploy the Nexus images, services and pods. Be patient. 
+**NOTE 1:** The latest version is not creating the service and I found sound problems to get the right image. The list
+of tags on Docker Hub are [here][13].
+**NOTE 2:** The first time will take some minutes to download and deploy the Nexus images, services and pods. Be patient. 
 
 After that we create a route to access externally to the new service.
 
@@ -99,7 +101,7 @@ After that we create a route to access externally to the new service.
 The first image will not include any persistence volume, so any change done in Nexus will be lost after any restart process. 
 To avoid it we will create a persistence volumen.
 
-    [rmarting@rhel7 ~/Workspaces/FIS/fis-demo] oc volumes dc/nexus --add --name 'nexus-volume-1' --type 'pvc' --mount-path '/sonatype-work/' --claim-name 'nexus-pv' --claim-size '1G' --overwrite
+    [rmarting@rhel7 ~] oc volumes dc/nexus --add --name 'nexus-volume-1' --type 'pvc' --mount-path '/sonatype-work/' --claim-name 'nexus-pv' --claim-size '1G' --overwrite
     persistentvolumeclaims/nexus-pv
     deploymentconfigs/nexus
 
@@ -125,9 +127,29 @@ The following screenshoot in Nexus will appear:
 
 ![Nexus - Repositories](./img/nexus-repositories.png "Nexus - Repositories")
 
-### Jenkins (TODO)
+### Jenkins
 
-TBC
+[Jenkins][11] is the common tool to implement Continuous Integration and Continuous Delivery pipeline. This tool will
+help us to implement some jobs to automate the build, deploy and promote tasks from our applications to the final
+environments.
+
+Following this [article][12] we will have a local Jenkins working in our OpenShift platform. First at all, we will create
+a Jenkins template with a persistent volume to store all our changes: 
+
+    [rmarting@rhel7 ~] oc create -f https://raw.githubusercontent.com/openshift/origin/master/examples/jenkins/jenkins-persistent-template.json
+    template "jenkins-persistent" created
+
+Now we could create a new application using the Jenkins Template:
+
+![Jenkins Parameters](./img/cicd-jenkins-parameters.png "Jenkins Parameters")
+
+The initial parameters needed for the new application are:
+
+* Jenkins Password: admin
+
+After some minutes we will have the new Jenkins application running. This process will create a route for this application.
+
+The CI/CD pipelines will be described later.
 
 ## xPaaS Images
 
@@ -228,6 +250,41 @@ After some minutes we will have the different AMQ services running:
 
 For more information about A-MQ images, please, refer [here][10]
 
+## MongoDB Service
+
+This demo uses a MongoDB database to store some data related with the integration routes. This MongoDB service will
+be used locally|internally for the rest of services.
+
+To create the MongoDB Service, execute the next command:
+
+    [rmarting@rhel7 ~] oc new-app -e MONGODB_USER=admin,MONGODB_PASSWORD=admin,MONGODB_DATABASE=fis-demo,MONGODB_ADMIN_PASSWORD=admin \
+    >     registry.access.redhat.com/rhscl/mongodb-26-rhel7
+    --> Found Docker image 257feb7 (13 days old) from registry.access.redhat.com for "registry.access.redhat.com/rhscl/mongodb-26-rhel7"
+    
+        MongoDB 2.6 
+        ----------- 
+        MongoDB is a scalable, high-performance, open source NoSQL database.
+    
+        Tags: database, mongodb, rh-mongodb26
+    
+        * An image stream will be created as "mongodb-26-rhel7:latest" that will track this image
+        * This image will be deployed in deployment config "mongodb-26-rhel7"
+        * Port 27017/tcp will be load balanced by service "mongodb-26-rhel7"
+          * Other containers can access this service through the hostname "mongodb-26-rhel7"
+        * This image declares volumes and will default to use non-persistent, host-local storage.
+          You can add persistent volumes later by running 'volume dc/mongodb-26-rhel7 --add ...'
+    
+    --> Creating resources with label app=mongodb-26-rhel7 ...
+        imagestream "mongodb-26-rhel7" created
+        deploymentconfig "mongodb-26-rhel7" created
+        service "mongodb-26-rhel7" created
+    --> Success
+        Run 'oc status' to view your app.
+
+**NOTE 2:** This service is not persistent.
+
+For more information about MongoDB images, please, refer [here][14]
+
 ## Demo Services
 
 The Integration Services are based using the following concepts:
@@ -239,8 +296,8 @@ There are two application templates defined to create the different applications
 templates will facilitate us the creation process and they will create all the different OpenShift objects needed (build 
 config, deployment, service, image stream)
 
-* *fis-demo-web-template*: Template to create a Service exposing services in HTTP ports. 
-* *fis-demo-camel-template*: Template to create Service without external HTTP ports.
+* **fis-demo-web-template**: Template to create a Service exposing services in HTTP ports. 
+* **fis-demo-camel-template**: Template to create Service without external HTTP ports.
 
 Logged as _openshift-dev_ user into the _fis_ project, we will create this application templates with:
 
@@ -290,7 +347,7 @@ After some minutes we will have the following service running in one pod:
 
 If there is not issues, the WSDL will be available at:
 
-    http://fis-demo-camel-cxf-fis.rhel-cdk.10.1.2.2.xip.io/ws/customer/?wsdl
+    http://fis-demo-camel-cxf-route-fis.rhel-cdk.10.1.2.2.xip.io/ws/customer/?wsdl
 
 There is a SoapUI project create in _camel-cxf/src/test/resources/soapui_ with a sample request to test the Web
 Service deployed in the platform.
@@ -384,6 +441,72 @@ If we access to the Java Console of the camel-eip pod we could review the Camel 
 
 ![camel-eip - Camel Statistics](./img/fis-demo-camel-eip-camel-route-diagrams.png "camel-eip - Camel Statistics")
 
+# CI/CD Pipelines
+
+After that we create a route to access externally to the new service.
+
+Created some 
+
+* fis-qa: Namespace to manage Testing|QA phases
+* fis-ga: Namespace to production mode
+
+First at all, create the new namespaces:
+
+    [rmarting@rhel7 ~] oc new-project fis-qa --display-name="Fuse Integration Services Demo (QA)" --description="QA Environment"
+    Now using project "fis-qa" on server "https://10.1.2.2:8443".
+    
+    You can add applications to this project with the 'new-app' command. For example, try:
+    
+        $ oc new-app centos/ruby-22-centos7~https://github.com/openshift/ruby-hello-world.git
+    
+    to build a new hello-world application in Ruby.
+    [rmarting@rhel7 ~/Workspaces/FIS/fis-demo] oc new-project fis-ga --display-name="Fuse Integration Services Demo (GA)" --description="GA Environment"
+    Now using project "fis-ga" on server "https://10.1.2.2:8443".
+    
+    You can add applications to this project with the 'new-app' command. For example, try:
+    
+        $ oc new-app centos/ruby-22-centos7~https://github.com/openshift/ruby-hello-world.git
+    
+    to build a new hello-world application in Ruby.
+
+After that we create in Jenkins some views to identify the different CI/CD pipelines:
+
+* CI View
+* CD DEV View
+* CD QA View
+* CD GA View
+
+Each component will have its own Jenkins job to execute the following pipeline:
+
+* Maven Build and QA phase (Integration with SonarQube)
+* Openshift Build and deploy into DEV namespace
+* Tag current Image Stream and Tag next Image Strem into following namespace. Workflow:
+    latest (DEV) -> qa (QA) -> ga (GA)
+* Validate deployments
+
+To integrate Jenkins with OpenShift the best way is the [OpenShift Pipeline Plug-In][15]. 
+
+**NOTE:** We use the following command to get the user token to integrate Jenkins and Openshift
+
+    [rmarting@rhel7 ~] oc whoami -t
+    Vh_YLFTRRTNXGSJMYVK4GskFFGF6xp6cNsFt0MQTjUM
+
+The project is created as a new job using the _OpenShift Sample_ project defined in Jenkins.
+
+This project will include the steps:
+
+* Trigger OpenShift Build
+- URL of the OpenShift api endpoint   https://10.1.2.2:8443
+- The name of the BuildConfig to trigger  fis-demo-camel-cxf
+- The name of the project the BuildConfig is stored in    fis
+- The authorization token for interacting with OpenShift  XXXXXX
+
+* Verify OpenShift Build
+- URL of the OpenShift api endpoint   https://10.1.2.2:8443
+- The name of the BuildConfig to trigger  fis-demo-camel-cxf
+- The name of the project the BuildConfig is stored in    fis
+- The authorization token for interacting with OpenShift  XXXXXX
+
 <!-- References and Links -->
 
 [1]: https://access.redhat.com/documentation/en/red-hat-xpaas/version-0/red-hat-xpaas-fuse-integration-services-image/
@@ -396,13 +519,24 @@ If we access to the Java Console of the camel-eip pod we could review the Camel 
 [8]: https://github.com/jboss-fuse/application-templates
 [9]: https://docs.openshift.org/latest/install_config/imagestreams_templates.html#install-config-imagestreams-templates
 [10]: https://access.redhat.com/documentation/en/red-hat-xpaas/0/paged/red-hat-xpaas-a-mq-image/chapter-5-tutorials
-
+[11]: https://jenkins.io/index.html
+[12]: https://docs.openshift.org/latest/using_images/other_images/jenkins.html
+[13]: https://hub.docker.com/r/sonatype/nexus/tags/
+[14]: https://docs.openshift.com/enterprise/3.1/using_images/db_images/mongodb.html
+[15]: https://wiki.jenkins-ci.org/display/JENKINS/OpenShift+Pipeline+Plugin
 
 # Other Resources
 
 * [Technical Restrictions on Fuse Integration Services](https://access.redhat.com/articles/2112371)
 * [How to use local Nexus mirror for EAP s2i in OpenShift](https://access.redhat.com/solutions/2293571)
 * [CI/CD with OpenShift](https://blog.openshift.com/cicd-with-openshift)
-* [CXFRS Component](http://camel.apache.org/cxfrs.html)
+* [OpenShift Authentication](https://docs.openshift.com/enterprise/3.2/architecture/additional_concepts/authentication.html)
+* [Pruning Resources in OpenShift](https://docs.openshift.com/enterprise/3.2/admin_guide/pruning_resources.html)
+* [Camel CXFRS Component](http://camel.apache.org/cxfrs.html)
+* [Camel MongoDB Component](http://camel.apache.org/mongodb.html)
 * [Configuring JAX-RS Client Endpoints](https://access.redhat.com/documentation/en-US/Red_Hat_JBoss_Fuse/6.2/html/Apache_CXF_Development_Guide/JAXRSEndpointConfig-CltConfig.html)
 * [Implementing a CXFRS client in JBoss Fuse](http://www.rubix.nl/blogs/implementing-cxfrs-client-jboss-fuse)
+* [Use Vagrant Landrush to add DNS features to your OpenShift CDK Machine](http://developers.redhat.com/blog/2016/05/27/use-vagrant-landrush-to-add-dns-features-to-your-openshift-cdk-machine/)
+* [Sample de FIS project](https://github.com/jbossdemocentral/jboss-fis-autodealer/tree/master/projects)    
+* [FIS Lab from Christina Lin](http://slides.com/weimeilin/fislab#/)
+* [CD Pipelines with Jenkins 2 on OpenShift](https://blog.openshift.com/pipelines-with-jenkins-2-on-openshift/)
