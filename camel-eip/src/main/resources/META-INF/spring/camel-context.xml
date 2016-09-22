@@ -51,7 +51,7 @@
     <!-- fis-demo-camel-cxfrs-fis.rhel-cdk.10.1.2.2.xip.io -->
     <!-- ${service:fis-demo-camel-cxfrs:localhost:8080} -->
     <jaxrs-client:client id="customerRestServiceClient" 
-        address="http://fis-demo-camel-cxfrs/rs"
+        address="http://fis-demo-camel-cxfrs-fis.rhel-cdk.10.1.2.2.xip.io/rs"
         serviceClass="com.redhat.fis.rs.CustomerRest">
         <jaxrs-client:headers>
             <entry key="Accept" value="application/json" />
@@ -66,7 +66,7 @@
     <!-- fis-demo-camel-cxf-fis.rhel-cdk.10.1.2.2.xip.io -->
     <!-- ${service:fis-demo-camel-cxf:localhost:8080} -->
     <jaxws:client id="customerWebService" 
-        address="http://fis-demo-camel-cxf/ws/customer/" 
+        address="http://fis-demo-camel-cxf-fis.rhel-cdk.10.1.2.2.xip.io/ws/customer/" 
         serviceClass="com.redhat.fis.ws.CustomerWS">
     </jaxws:client>                  
 
