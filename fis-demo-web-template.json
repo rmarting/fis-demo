@@ -91,7 +91,6 @@
         "name": "${SERVICE_NAME}"
       },
       "spec": {
-        "clusterIP": "None",
         "deprecatedPublicIPs": [],
         "ports": [
           {
@@ -106,6 +105,27 @@
           "component": "${APP_NAME}",
           "provider": "s2i",
           "group": "fis-demo"
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Route",
+      "metadata": {
+        "labels": {
+          "container": "java",
+          "component": "${APP_NAME}",
+          "provider": "s2i",
+          "project": "${APP_NAME}",
+          "version": "${APP_VERSION}",
+          "group": "fuse"
+        },
+        "name": "${SERVICE_NAME}-route"
+      },
+      "spec": {
+        "to": {
+          "kind": "Service",
+          "name": "${SERVICE_NAME}"
         }
       }
     },
