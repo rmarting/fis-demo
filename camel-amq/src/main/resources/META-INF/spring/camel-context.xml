@@ -30,16 +30,15 @@
         <property name="password" value="admin" />
     </bean>
 
-        
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
         <route id="amq-version">
             <from uri="timer:version?period=300s" />
             <log message="VERSION: 0.0.1-SNAPSHOT" />
-            <log message="SERVICE HOST : {{FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:localhost}}" />
-            <log message="SERVICE PORT : {{FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:port}}" />
-            <log message="ENVIRONMENT  : {{FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:local}}" />
-            <log message="OTHER ENV    : {{OTHERENV:other}}" />
+            <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST}}'" />
+            <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT}}'" />
+            <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT}}'" />
+            <log message="OTHER ENV    : '{{env:OTHERENV}}'" />
         </route>
 
         <route id="amq-send-message" autoStartup="true">
