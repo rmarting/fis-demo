@@ -35,10 +35,10 @@
         <route id="amq-version">
             <from uri="timer:version?period=300s" />
             <log message="VERSION: 0.0.1-SNAPSHOT" />
-            <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST}}'" />
-            <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT}}'" />
-            <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT}}'" />
-            <log message="OTHER ENV    : '{{env:OTHERENV}}'" />
+            <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:ide-host}}'" />
+            <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:ide-port}}'" />
+            <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:ide-env}}'" />
+            <log message="OTHER ENV    : '{{env:OTHERENV:ide-other}}'" />
         </route>
 
         <route id="amq-send-message" autoStartup="true">
