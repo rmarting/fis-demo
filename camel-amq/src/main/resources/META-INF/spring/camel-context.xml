@@ -34,7 +34,7 @@
     <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
         <route id="amq-version">
             <from uri="timer:version?period=300s" />
-            <log message="VERSION: 0.0.1-SNAPSHOT" />
+            <log message="VERSION: '0.0.1-SNAPSHOT-DEV'" />
             <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:ide-host}}'" />
             <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:ide-port}}'" />
             <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:ide-env}}'" />
