@@ -38,8 +38,8 @@
     <bean id="mongodb" class="com.mongodb.Mongo">
         <constructor-arg index="0">
             <bean class="com.mongodb.MongoURI">
-                <!--<constructor-arg name="uri" value="mongodb://admin:admin@mongodb-26-rhel7:27017/fis-demo" /> -->
-                <constructor-arg name="uri" value="mongodb://admin:admin@mongodb-32-rhel7:27017/fis-demo" />
+                <constructor-arg name="uri" value="mongodb://admin:admin@mongodb-26-rhel7:27017/fis-demo" />
+                <!-- constructor-arg name="uri" value="mongodb://admin:admin@mongodb-32-rhel7:27017/fis-demo" / -->
             </bean> 
         </constructor-arg> 
     </bean>
