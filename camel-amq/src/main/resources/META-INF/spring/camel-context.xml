@@ -23,54 +23,55 @@
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
         http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-    <!-- ActiveMQ Broker -->
+    <!-- Camel Properties -->
+    <bean id="properties" class="org.apache.camel.component.properties.PropertiesComponent">
+        <property name="location" value="classpath:/fis.properties"/>
+    </bean>     
+    <bean id="bridgePropertyPlaceholder" class="org.apache.camel.spring.spi.BridgePropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:/fis.properties</value>
+            </list>
+        </property>
+    </bean>    
+
+    <!-- 
+    ${env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:ide-host}
+    ${env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:ide-port}
+    tcp://amqbroker-amq-tcp:61616
+    -->
+
+    <!-- ActiveMQ Producer Broker -->
     <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
-        <property name="brokerURL" value="tcp://amqbroker-amq-tcp:61616" />
-        <property name="userName" value="admin" />
-        <property name="password" value="admin" />
+        <property name="brokerURL" value="${amq.producer.brokerURL}" />
+<!--         <property name="brokerURL" value="${env:FIS_DEMO_CAMEL_AMQ_SERVICE}" /> -->
+        <property name="userName" value="${amq.producer.userName}" />
+        <property name="password" value="${amq.producer.password}" />
     </bean>
 
-    <!-- Camel Context -->
-    <camelContext id="camelContext-fis-demo-amq" xmlns="http://camel.apache.org/schema/spring">
-        <route id="amq-version">
-            <from uri="timer:version?period=300s" />
-            <log message="VERSION: '0.0.1-SNAPSHOT-DEV'" />
-            <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:ide-host}}'" />
-            <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:ide-port}}'" />
-            <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:ide-env}}'" />
-            <log message="OTHER ENV    : '{{env:OTHERENV:ide-other}}'" />
-        </route>
+    <!-- ActiveMQ Consumer Broker -->
+    <bean id="activemq-consumer" class="org.apache.activemq.camel.component.ActiveMQComponent">
+        <property name="brokerURL" value="${amq.consumer.brokerURL}" />
+        <property name="userName" value="${amq.consumer.userName}" />
+        <property name="password" value="${amq.consumer.password}" />
+    </bean>
 
-        <route id="amq-send-message" autoStartup="true">
-            <from uri="timer:send-msg?period=240s" />
-            <!-- generate random number message, using a 3 digit number -->
-            <transform>
-                <method beanType="org.apache.commons.lang3.RandomStringUtils"
-                    method="randomNumeric(3)" />
-            </transform>
-            <choice>
-                <when>
-                    <simple>${body} &gt; 500</simple>
-                    <log message="Sending High priority message: ${body}" />
-                    <to uri="mock:high" />
-                    <to uri="activemq:queue:high" />
-                </when>
-                <otherwise>
-                    <log message="Sending Low priority message: ${body}" />
-                    <to uri="mock:regular" />
-                    <to uri="activemq:queue:low" />
-                </otherwise>
-            </choice>
-        </route>
+    <!-- Business Beans -->
+    <bean class="com.redhat.fis.amq.beans.IdGeneratorBean" id="generatorBean"/>
 
-        <route id="amq-consume-high">
-            <from uri="activemq:queue:high" />
-            <log message="Consuming HIGH message: ${body}" />
-        </route>
+    <!-- Error Handler -->
+    <bean class="org.apache.camel.builder.DeadLetterChannelBuilder" id="myDeadLetterErrorHandler">
+        <property name="deadLetterUri" value="activemq:queue:errors"/>
+        <property name="redeliveryPolicy" ref="myRedeliveryPolicyConfig"/>
+    </bean>
+    <bean class="org.apache.camel.processor.RedeliveryPolicy" id="myRedeliveryPolicyConfig">
+        <property name="maximumRedeliveries" value="1"/>
+        <property name="redeliveryDelay" value="10000"/>
+    </bean>
+    
+    <!-- Camel Contexts -->
+    <import resource="camel-context-amq-demo.xml" />
+    <import resource="camel-context-amq-producer.xml" />
+    <import resource="camel-context-amq-consumer.xml" />
 
-        <route id="amq-consume-low">
-            <from uri="activemq:queue:low" />
-            <log message="Consuming LOW message: ${body}" />
-        </route>
-    </camelContext>
 </beans>

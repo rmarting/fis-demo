@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright 2005-2015 Red Hat, Inc.
+
+     Red Hat licenses this file to you under the Apache License, version
+     2.0 (the "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+     implied.  See the License for the specific language governing
+     permissions and limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!-- Camel Context -->
+    <camelContext id="camelContext-fis-amq-demo" xmlns="http://camel.apache.org/schema/spring">
+        <route id="amq-version">
+            <from uri="timer:version?period=300s" />
+            <log message="VERSION: '0.0.1-SNAPSHOT-DEV'" />
+            <log message="SERVICE HOST : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_HOST:ide-host}}'" />
+            <log message="SERVICE PORT : '{{env:FIS_DEMO_CAMEL_AMQ_SERVICE_PORT:ide-port}}'" />
+            <log message="ENVIRONMENT  : '{{env:FIS_DEMO_CAMEL_AMQ_ENVIRONMENT:ide-env}}'" />
+            <log message="OTHER ENV    : '{{env:OTHERENV:ide-other}}'" />
+        </route>
+
+        <!-- Messages Routes -->
+        <route id="amq-send-message" autoStartup="true">
+            <from uri="timer:send-msg?period=240s" />
+            <!-- generate random number message, using a 3 digit number -->
+            <transform>
+                <method beanType="org.apache.commons.lang3.RandomStringUtils"
+                    method="randomNumeric(3)" />
+            </transform>
+            <choice>
+                <when>
+                    <simple>${body} &gt; 500</simple>
+                    <log message="Sending High priority message: ${body}" />
+                    <to uri="mock:high" />
+                    <to uri="activemq:queue:high" />
+                </when>
+                <otherwise>
+                    <log message="Sending Low priority message: ${body}" />
+                    <to uri="mock:regular" />
+                    <to uri="activemq:queue:low" />
+                </otherwise>
+            </choice>
+        </route>
+
+        <route id="amq-consume-high">
+            <from uri="activemq:queue:high" />
+            <log message="Consuming HIGH message: ${body}" />
+        </route>
+
+        <route id="amq-consume-low">
+            <from uri="activemq:queue:low" />
+            <log message="Consuming LOW message: ${body}" />
+        </route>
+    </camelContext>
+
+</beans>

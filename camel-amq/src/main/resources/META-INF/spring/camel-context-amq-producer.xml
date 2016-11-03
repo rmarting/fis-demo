@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Copyright 2005-2015 Red Hat, Inc.
+
+     Red Hat licenses this file to you under the Apache License, version
+     2.0 (the "License"); you may not use this file except in compliance
+     with the License.  You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+     implied.  See the License for the specific language governing
+     permissions and limitations under the License.
+
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:camel="http://camel.apache.org/schema/spring"
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <!-- Camel Context -->
+    <camelContext id="camelContext-fis-demo-amq-producer" xmlns="http://camel.apache.org/schema/spring">
+        <route id="sendMessagetoQueueOne">
+            <from id="_from1" uri="timer:amq-sender-one?period=45s"/>
+            <setBody id="_setBody1">
+                <method method="generateNewID" ref="generatorBean"/>
+            </setBody>
+            <log id="_log1" message="Sending Message '#${body}' to queue 'sampleQueueOne'"/>
+<!--             <log id="_log1" message="Sending Message '#${body}' to queue 'sampleQueueOne' at ${amq.producer.brokerURL} Broker"/> -->
+<!--             <log id="_log1" message="Sending Message '#${body}' to queue 'sampleQueueOne' at {{amq.producer.brokerURL}} Broker"/> -->
+            <log message="Value of 'env.prop01' = '{{env.prop01}}'"/>
+            <log message="Value of 'common.prop01' = '{{common.prop01}}'"/>
+            <to id="_to1" uri="activemq:queue:sampleQueueOne"/>
+        </route>
+
+        <route id="sendMessagetoQueueTwo">
+            <from id="_from3" uri="timer:amq-sender-two?period=90s"/>
+            <setBody id="_setBody3">
+                <method method="generateNewID" ref="generatorBean"/>
+            </setBody>
+            <log id="_log3" message="Sending Message '#${body}' to queue 'sampleQueueTwo'"/>
+            <to id="_to3" uri="activemq:queue:sampleQueueTwo"/>
+        </route>
+
+        <route id="sendMessageToVirtualTopic">
+            <from id="_from2" uri="timer:amq-sender-vt?period=135s"/>
+            <setBody id="_setBody2">
+                <method method="generateNewID" ref="generatorBean"/>
+            </setBody>
+            <log id="_log2" message="Sending Message '#${body}' to topic 'VirtualTopic.Sample'"/>
+            <to id="_to2" uri="activemq:topic:VirtualTopic.Sample"/>
+        </route>
+    </camelContext>
+
+</beans>
