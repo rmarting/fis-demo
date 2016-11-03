@@ -1,0 +1,140 @@
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "annotations": {
+          "prometheus.io/port": "9779",
+          "prometheus.io/scrape": "true"
+        },
+        "labels": {
+          "container": "java",
+          "component": "fis-demo-camel-eip",
+          "provider": "s2i",
+          "project": "fis-demo-camel-eip",
+          "version": "2.2.0.redhat-079",
+          "group": "fis-demo"
+        },
+        "name": "fis-demo-camel-eip"
+      },
+      "spec": {
+        "clusterIP": "None",
+        "deprecatedPublicIPs": [],
+        "selector": {
+          "container": "java",
+          "project": "fis-demo-camel-eip",
+          "component": "fis-demo-camel-eip",
+          "provider": "s2i",
+          "group": "fis-demo"
+        }
+      }
+    }
+    {
+      "kind": "ImageStream",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "fis-demo-camel-eip",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "fis-demo-camel-eip",
+          "container": "java",
+          "group": "fis-demo",
+          "project": "fis-demo-camel-eip",
+          "provider": "s2i",
+          "version": "2.2.0.redhat-079"
+        }
+      },
+      "spec": {},
+      "status": {
+        "dockerImageRepository": ""
+      }
+    }
+    {
+      "kind": "DeploymentConfig",
+      "apiVersion": "v1",
+      "metadata": {
+        "name": "fis-demo-camel-eip",
+        "creationTimestamp": null,
+        "labels": {
+          "component": "fis-demo-camel-eip",
+          "container": "java",
+          "group": "fis-demo",
+          "project": "fis-demo-camel-eip",
+          "provider": "s2i",
+          "version": "2.2.0.redhat-079"
+        }
+      },
+      "spec": {
+        "strategy": {
+          "resources": {}
+        },
+        "triggers": [
+          {
+            "type": "ConfigChange"
+          },
+          {
+            "type": "ImageChange",
+            "imageChangeParams": {
+              "automatic": true,
+              "containerNames": [
+                "fis-demo-camel-eip"
+              ],
+              "from": {
+                "kind": "ImageStreamTag",
+                "name": "fis-demo-camel-eip:qa"
+              }
+            }
+          }
+        ],
+        "replicas": 1,
+        "selector": {
+          "component": "fis-demo-camel-eip",
+          "container": "java",
+          "deploymentconfig": "fis-demo-camel-eip",
+          "group": "fis-demo",
+          "project": "fis-demo-camel-eip",
+          "provider": "s2i",
+          "version": "2.2.0.redhat-079"
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "component": "fis-demo-camel-eip",
+              "container": "java",
+              "deploymentconfig": "fis-demo-camel-eip",
+              "group": "fis-demo",
+              "project": "fis-demo-camel-eip",
+              "provider": "s2i",
+              "version": "2.2.0.redhat-079"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "name": "fis-demo-camel-eip",
+                "image": "library/fis-demo-camel-eip:qa",
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "/bin/bash",
+                      "-c",
+                      "(curl -f 127.0.0.1:8778) >/dev/null 2>&1; test $? != 7"
+                    ]
+                  },
+                  "initialDelaySeconds": 30,
+                  "timeoutSeconds": 5
+                },
+                "ports": [
+                  {
+                    "containerPort": 8778,
+                    "name": "jolokia"
+                  }
+                ],
+                "resources": {}
+              }
+            ]
+          }
+        }
+      },
+      "status": {}
+    }
