@@ -90,7 +90,7 @@
 
         <route id="test-route">
             <from uri="timer:foo?period=120s" />
-            <log message="Camel Context running!" />
+            <log message="Camel Context running!. Application Version: 0.0.1" />
         </route>
 
         <route id="load-customer-amq">

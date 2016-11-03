@@ -40,6 +40,11 @@
     <bean id="customerRSImpl" class="com.redhat.fis.demo.rs.CustomerRestImpl" />
 
     <camelContext id="camelContext-fis-demo-cxfrs" xmlns="http://camel.apache.org/schema/spring">
+        <route id="test-route">
+            <from uri="timer:foo?period=120s" />
+            <log message="Camel Context running!. Application Version: 0.0.1" />
+        </route>
+    
         <route id="cxfrs-service">
             <from uri="cxfrs:bean:customerRestService" />
             <bean ref="customerRSImpl" method="enrich" />

@@ -36,6 +36,11 @@
 
     <!-- Camel Context -->
     <camelContext id="camelContext-fis-demo-cxf" xmlns="http://camel.apache.org/schema/spring">
+        <route id="test-route">
+            <from uri="timer:foo?period=120s" />
+            <log message="Camel Context running!. Application Version: 0.0.1" />
+        </route>
+
         <route id="cxf">
             <from uri="cxf:bean:customerWebService" />
             <bean ref="customerWSImpl" method="updateAccount" />
